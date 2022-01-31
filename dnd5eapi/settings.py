@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'debug_toolbar',
     'rest_framework',
-    'items'
+    'items',
+    'playground'
 ]
 
 MIDDLEWARE = [
@@ -86,7 +87,7 @@ WSGI_APPLICATION = 'dnd5eapi.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'dnd5eitems',
+        'NAME': 'dnd5e',
         'HOST': 'localhost',
         'USER': 'root',
         'PASSWORD': 'Hunter55!'
