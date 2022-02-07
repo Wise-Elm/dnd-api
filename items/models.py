@@ -9,6 +9,9 @@ class AbilityScore(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['name']
+
 
 class Skill(models.Model):
     name = models.CharField(max_length=255)
@@ -18,12 +21,18 @@ class Skill(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['name']
+
 
 class WeaponType(models.Model):
     name = models.CharField(max_length=255)
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']
 
 
 class DamageType(models.Model):
@@ -33,17 +42,8 @@ class DamageType(models.Model):
     def __str__(self):
         return self.name
 
-
-class Weapon(models.Model):
-    name = models.CharField(max_length=255)
-    weapon_type = models.ForeignKey(WeaponType, models.PROTECT)
-    cost = models.PositiveIntegerField()
-    damage = models.CharField(max_length=10, null=True)
-    damage_type = models.ForeignKey(DamageType, models.PROTECT)
-    weight = models.DecimalField(max_digits=5, decimal_places=2, null=True)
-
-    def __str__(self):
-        return self.name
+    class Meta:
+        ordering = ['name']
 
 
 class WeaponProperty(models.Model):
@@ -53,13 +53,24 @@ class WeaponProperty(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        ordering = ['name']
 
-class WeaponWeaponProperty(models.Model):
-    weapon_id = models.ForeignKey(Weapon, models.CASCADE)
-    property_id = models.ForeignKey(WeaponProperty, models.CASCADE)
+
+class Weapon(models.Model):
+    name = models.CharField(max_length=255)
+    weapon_type = models.ForeignKey(WeaponType, models.PROTECT)
+    cost = models.PositiveIntegerField()
+    damage = models.CharField(max_length=10, null=True)
+    damage_type = models.ForeignKey(DamageType, models.PROTECT)
+    weight = models.DecimalField(max_digits=5, decimal_places=2, null=True)
+    properties = models.ManyToManyField(WeaponProperty)
+
+    def __str__(self):
+        return self.name
 
     class Meta:
-        unique_together = ('weapon_id', 'property_id')
+        ordering = ['name']
 
 
 class EquipmentCategory(models.Model):
@@ -67,6 +78,9 @@ class EquipmentCategory(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']
 
 
 class Equipment(models.Model):
@@ -80,3 +94,6 @@ class Equipment(models.Model):
 
     def __str__(self):
         return self.name
+
+    class Meta:
+        ordering = ['name']

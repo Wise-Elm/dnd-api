@@ -126,6 +126,6 @@ def get_db_values(file_path, keys=[]):
     return db_entries
 
 
-vals = get_db_values('/home/graham/VSCode/webscraper/dndequipment.yaml', ['property_id_id', 'weapon_id_id'])
+# vals = get_db_values('/home/graham/VSCode/webscraper/dndequipment.yaml', ['property_id_id', 'weapon_id_id'])
 
-database_insert(vals=vals)
+# database_insert(vals=vals)
