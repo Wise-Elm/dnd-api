@@ -40,3 +40,15 @@ class WeaponPropertySerializer(serializers.Serializer):
     id = serializers.IntegerField()
     name = serializers.CharField(max_length=255)
     description = serializers.CharField(allow_blank=True)
+
+
+class EquipmentSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField(max_length=255)
+    cost = serializers.IntegerField()
+    equipment_category = serializers.CharField(max_length=255)
+
+
+class EquipmentCategorySerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    name = serializers.CharField(max_length=255)

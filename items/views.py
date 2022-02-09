@@ -9,7 +9,10 @@ from . import serializers
 
 @api_view()
 def weapon_list(request):
-    queryset = models.Weapon.objects.all()
+    queryset = models.Weapon.objects. \
+        select_related('weapon_type', 'damage_type'). \
+        prefetch_related('properties'). \
+        all()
     serializer = serializers.WeaponSerializer(queryset, many=True)
     return Response(serializer.data)
 
@@ -37,7 +40,7 @@ def ability_score_detail(request, id):
 
 @api_view()
 def skill_list(request):
-    queryset = models.Skill.objects.all()
+    queryset = models.Skill.objects.select_related('ability_score').all()
     serializer = serializers.SkillSerializer(queryset, many=True)
     return Response(serializer.data)
 
@@ -74,4 +77,32 @@ def weapon_property_list(request):
 def weapon_property_detail(request, id):
     weapon_property = get_object_or_404(models.WeaponProperty, pk=id)
     serializer = serializers.WeaponPropertySerializer(weapon_property)
+    return Response(serializer.data)
+
+
+@api_view()
+def equipment_list(request):
+    queryset = models.Equipment.objects.select_related('equipment_category').all()
+    serializer = serializers.EquipmentSerializer(queryset, many=True)
+    return Response(serializer.data)
+
+
+@api_view()
+def equipment_detail(request, id):
+    equipment = get_object_or_404(models.Equipment, pk=id)
+    serializer = serializers.EquipmentSerializer(equipment)
+    return Response(serializer.data)
+
+
+@api_view()
+def equipment_category_list(request):
+    queryset = models.EquipmentCategory.objects.all()
+    serializer = serializers.EquipmentCategorySerializer(queryset, many=True)
+    return Response(serializer.data)
+
+
+@api_view()
+def equipment_category_detail(request, id):
+    equipment = get_object_or_404(models.EquipmentCategory, pk=id)
+    serializer = serializers.EquipmentCategorySerializer(equipment)
     return Response(serializer.data)
