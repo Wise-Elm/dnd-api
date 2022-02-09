@@ -1,3 +1,4 @@
+from django.core.validators import MinValueValidator
 from django.db import models
 
 
@@ -63,8 +64,13 @@ class Weapon(models.Model):
     cost = models.PositiveIntegerField()
     damage = models.CharField(max_length=10, null=True)
     damage_type = models.ForeignKey(DamageType, models.PROTECT)
-    weight = models.DecimalField(max_digits=5, decimal_places=2, null=True)
-    properties = models.ManyToManyField(WeaponProperty)
+    weight = models.DecimalField(
+        max_digits=5,
+        decimal_places=2,
+        null=True,
+        validators=[MinValueValidator(0)]
+    )
+    properties = models.ManyToManyField(WeaponProperty, null=True, blank=True)
 
     def __str__(self):
         return self.name

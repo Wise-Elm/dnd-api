@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db.models import Count
 from django.urls import reverse
-from django.utils.html import format_html
+from django.utils.html import format_html, urlencode
 
 from . import models
 
@@ -9,40 +9,63 @@ from . import models
 @admin.register(models.AbilityScore)
 class AbilityScoreAdmin(admin.ModelAdmin):
     list_display = ['name', 'abbreviated_name']
-    ordering = ['name', 'abbreviated_name']
     list_per_page = 40
+    ordering = ['name', 'abbreviated_name']
+    search_fields = ['name']
 
 
 @admin.register(models.Equipment)
 class EquipmentAdmin(admin.ModelAdmin):
     list_display = ['name', 'cost', 'equipment_category']
-    ordering = ['name', 'cost', 'equipment_category']
     list_per_page = 40
+    ordering = ['name', 'cost', 'equipment_category']
+    search_fields = ['name']
 
 
 @admin.register(models.EquipmentCategory)
 class EquipmentCategoryAdmin(admin.ModelAdmin):
     list_display = ['name']
-    ordering = ['name']
     list_per_page = 40
+    ordering = ['name']
+    search_fields = ['name']
 
 
 @admin.register(models.Skill)
 class SkillAdmin(admin.ModelAdmin):
     list_display = ['name', 'ability_score', 'description']
-    ordering = ['name', 'ability_score']
     list_per_page = 40
+    ordering = ['name', 'ability_score']
+    search_fields = ['name']
 
 
 @admin.register(models.WeaponProperty)
 class WeaponPropertyAdmin(admin.ModelAdmin):
-    list_display = ['name', 'description']
-    ordering = ['name']
+    list_display = ['name', 'weapon_count', 'description']
     list_per_page = 40
+    ordering = ['name']
+    search_fields = ['name']
+
+
+    @admin.display(ordering='weapon_count')
+    def weapon_count(self, weaponproperty):
+        url = (
+            reverse('admin:items_weapon_changelist')
+            + '?'
+            + urlencode({
+                'properties__id': str(weaponproperty.id)
+            }))
+
+        return format_html('<a href="{}">{}</a>', url, weaponproperty.weapon_count)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(
+            weapon_count=Count('weapon')
+        )
 
 
 @admin.register(models.Weapon)
 class WeaponAdmin(admin.ModelAdmin):
+    autocomplete_fields = ['weapon_type', 'damage_type']
     list_display = [
         'name',
         'weapon_type',
@@ -53,14 +76,16 @@ class WeaponAdmin(admin.ModelAdmin):
         'weight',
         'property_count'
     ]
-    ordering = ['name']
+    list_filter = ['weapon_type', 'properties', 'damage_type']
     list_per_page = 40
+    ordering = ['name']
+    search_fields = ['name']
 
     @admin.display()
     def max_damage(self, weapon):
         if weapon.damage is not None:
             max_damage = int(weapon.damage[0]) * int(weapon.damage[2:])
-            return int(max_damage)
+            return max_damage
         else:
             return 0
 
@@ -73,28 +98,46 @@ class WeaponAdmin(admin.ModelAdmin):
             property_count=Count('properties')
         )
 
-    # @admin.display()
-    # def weapon_type(self, weapon):
-    #     url = reverse('admin:items_weapontype_changelist')
-    #     return format_html('<a href="http://google.com">{}</a>', weapon_type)
-
 
 @admin.register(models.DamageType)
 class DamageTypeAdmin(admin.ModelAdmin):
-    list_display = ['name', 'description']
-    ordering = ['name']
+    list_display = ['name', 'weapon_count', 'description']
     list_per_page = 40
+    ordering = ['name']
+    search_fields = ['name']
+
+    @admin.display(ordering='weapon_count')
+    def weapon_count(self, damagetype):
+        url = (
+            reverse('admin:items_weapon_changelist')
+            + '?'
+            + urlencode({
+                'damage_type__id': str(damagetype.id)
+            }))
+        return format_html('<a href="{}">{}</a>', url, damagetype.weapon_count)
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).annotate(
+            weapon_count=Count('weapon')
+        )
 
 
 @admin.register(models.WeaponType)
 class WeaponTypeAdmin(admin.ModelAdmin):
     list_display = ['name', 'weapon_count']
-    ordering = ['name']
     list_per_page = 40
+    ordering = ['name']
+    search_fields = ['name']
 
     @admin.display(ordering='weapon_count')
     def weapon_count(self, weapontype):
-        return weapontype.weapon_count
+        url = (
+            reverse('admin:items_weapon_changelist')
+            + '?'
+            + urlencode({
+                'weapon_type__id': str(weapontype.id)
+            }))
+        return format_html('<a href="{}">{}</a>', url, weapontype.weapon_count)
 
     def get_queryset(self, request):
         return super().get_queryset(request).annotate(
