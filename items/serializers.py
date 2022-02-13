@@ -33,7 +33,7 @@ def format_cost(item):
         cost_in_copper -= COPPER_TO_SILVER
     cp = cost_in_copper  # Remainder is leftover cost in copper.
 
-    cost = ''  # Remove 0 from string.
+    cost = ''
     if gp > 0:
         cost += str(gp) + 'gp, '
     if sp > 0:
@@ -41,7 +41,8 @@ def format_cost(item):
     if cp > 0:
         cost += str(cp) + 'cp '
 
-    return cost.rstrip(' ,').lstrip()
+    cost = cost.lstrip().rstrip(' ,')
+    return cost
 
 
 def format_weight(item):
@@ -187,7 +188,7 @@ class WeaponSerializer(serializers.ModelSerializer):
         """
 
         if weapon.damage:
-            num_and_dice: list['number of dice', 'dice type'] = str(weapon.damage).split('d')
+            num_and_dice = str(weapon.damage).split('d')  # num_and_dice: list['number of dice', 'dice type']
             max_damage = int(num_and_dice[0]) * int(num_and_dice[1])
             return max_damage
 
