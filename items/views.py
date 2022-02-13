@@ -24,14 +24,14 @@ def ability_score_detail(request, id):
 @api_view()
 def damage_type_list(request):
     queryset = models.DamageType.objects.all()
-    serializer = serializers.DamageSerializer(queryset, many=True)
+    serializer = serializers.DamageTypeSerializer(queryset, many=True)
     return Response(serializer.data)
 
 
 @api_view()
 def damage_type_detail(request, id):
     damage = get_object_or_404(models.DamageType, pk=id)
-    serializer = serializers.DamageSerializer(damage)
+    serializer = serializers.DamageTypeSerializer(damage)
     return Response(serializer.data)
 
 
