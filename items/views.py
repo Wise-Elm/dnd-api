@@ -1,7 +1,6 @@
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers, status
 from rest_framework.decorators import api_view
-from rest_framework.relations import StringRelatedField
 from rest_framework.response import Response
 from . import models
 from . import serializers
@@ -85,60 +84,108 @@ def equipment_detail(request, id):
         return Response(serializer.data)
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def equipment_category_list(request):
-    queryset = models.EquipmentCategory.objects.all()
-    serializer = serializers.EquipmentCategorySerializer(queryset, many=True)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        queryset = models.EquipmentCategory.objects.all()
+        serializer = serializers.EquipmentCategorySerializer(queryset, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = serializers.EquipmentCategorySerializer(equipment_category_list, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
-@api_view()
+@api_view(['GET', 'PUT'])
 def equipment_category_detail(request, id):
-    equipment = get_object_or_404(models.EquipmentCategory, pk=id)
-    serializer = serializers.EquipmentCategorySerializer(equipment)
-    return Response(serializer.data)
+    equipment_category = get_object_or_404(models.EquipmentCategory, pk=id)
+    if request.method == 'GET':
+        serializer = serializers.EquipmentCategorySerializer(equipment_category)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = serializers.EquipmentSerializer(equipment_category, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def skill_list(request):
-    queryset = models.Skill.objects.select_related('ability_score').all()
-    serializer = serializers.SkillSerializer(queryset, many=True)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        queryset = models.Skill.objects.select_related('ability_score').all()
+        serializer = serializers.SkillSerializer(queryset, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = serializers.SkillSerializer(skill_list, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
-@api_view()
+@api_view(['GET', 'PUT'])
 def skill_detail(request, id):
     skill = get_object_or_404(models.Skill, pk=id)
-    serializer = serializers.SkillSerializer(skill)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        serializer = serializers.SkillSerializer(skill)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = serializers.EquipmentSerializer(skill_detail, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def weapon_list(request):
-    queryset = models.Weapon.objects. \
-        select_related('weapon_type', 'damage_type'). \
-        prefetch_related('properties'). \
-        all()
-    serializer = serializers.WeaponSerializer(queryset, many=True)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        queryset = models.Weapon.objects. \
+            select_related('weapon_type', 'damage_type'). \
+            prefetch_related('properties'). \
+            all()
+        serializer = serializers.WeaponSerializer(queryset, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = serializers.WeaponSerializer(weapon_list, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
-@api_view()
+@api_view(['GET', 'PUT'])
 def weapon_detail(request, id):
     weapon = get_object_or_404(models.Weapon, pk=id)
-    serializer = serializers.WeaponSerializer(weapon)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        serializer = serializers.WeaponSerializer(weapon)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = serializers.EquipmentSerializer(weapon, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def weapon_property_list(request):
-    queryset = models.WeaponProperty.objects.all()
-    serializer = serializers.WeaponPropertySerializer(queryset, many=True)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        queryset = models.WeaponProperty.objects.all()
+        serializer = serializers.WeaponPropertySerializer(queryset, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = serializers.WeaponPropertySerializer(weapon_property_list, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
-@api_view()
+@api_view(['GET', 'PUT'])
 def weapon_property_detail(request, id):
     weapon_property = get_object_or_404(models.WeaponProperty, pk=id)
-    serializer = serializers.WeaponPropertySerializer(weapon_property)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        serializer = serializers.WeaponPropertySerializer(weapon_property)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = serializers.EquipmentSerializer(weapon_property, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)

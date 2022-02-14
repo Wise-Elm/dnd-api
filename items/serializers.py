@@ -114,6 +114,10 @@ class DamageTypeSerializer(serializers.ModelSerializer):
 
 
 class EquipmentSerializer(serializers.ModelSerializer):
+    formatted_cost = serializers.SerializerMethodField(method_name='get_formatted_cost')
+    # equipment_category_name = serializers.StringRelatedField(many=False)
+    formatted_weight = serializers.SerializerMethodField(method_name='get_formatted_weight')
+
     class Meta:
         model = models.Equipment
         fields = (
@@ -125,11 +129,6 @@ class EquipmentSerializer(serializers.ModelSerializer):
             'formatted_weight',
             'equipment_category',
         )
-
-    formatted_cost = serializers.SerializerMethodField(method_name='get_formatted_cost')
-    # equipment_category_name = serializers.StringRelatedField(many=False)
-    formatted_weight = serializers.SerializerMethodField(method_name='get_formatted_weight')
-
 
     def get_formatted_cost(self, equipment: models.Equipment):
         """Return a nicely readable representation of item cost.
@@ -183,19 +182,18 @@ class WeaponSerializer(serializers.ModelSerializer):
             'name',
             'weapon_type',
             'cost',
+            'formatted_cost',
             'damage',
             'max_damage',
             'damage_type',
             'weight',
-            'properties'
+            'formatted_weight',
+            'properties',
         )
 
-    cost = serializers.SerializerMethodField(method_name='get_formatted_cost')
-    damage_type = serializers.StringRelatedField(many=False)
+    formatted_cost = serializers.SerializerMethodField(method_name='get_formatted_cost')
     max_damage = serializers.SerializerMethodField(method_name='get_max_damage')
-    properties = serializers.StringRelatedField(many=True, required=False)
-    weapon_type = serializers.StringRelatedField(many=False)
-    weight = serializers.SerializerMethodField(method_name='get_formatted_weight')
+    formatted_weight = serializers.SerializerMethodField(method_name='get_formatted_weight')
 
     # def create(self, validated_data):
     #     weapon = models.Weapon(**validated_data)
