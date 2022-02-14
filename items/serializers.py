@@ -6,7 +6,49 @@ COPPER_TO_GOLD = 100  # Amount of copper in 1 gold piece.
 COPPER_TO_SILVER = 10  # Amount of copper in 1 silver piece.
 
 
-def format_cost(item):
+def format_cost_for_storage(item):
+    """Return an integer representation of the cost of item in argument.
+    1 gold piece == 100 copper pieces.
+    1 silver piece == 10 copper pieces.
+
+    Args:
+         item(obj): item object with a cost attribute.
+
+    Returns:
+        cost (int): Integer representation of the item cost.
+     """
+
+    if item.cost is int:
+        cost = item.cost
+        return cost
+
+    if item.cost == '0':
+        cost = int(item.cost)
+        return cost
+
+    cp, sp, gp = 0, 0, 0
+    cost_in_all = item.cost.split()
+    for denomination in cost_in_all:
+        if 'gp' in denomination:
+            index_ = denomination.index('gp')
+            gp = int(denomination[:index_])
+        elif 'sp' in denomination:
+            index_ = denomination.index('sp')
+            sp = int(denomination[:index_])
+        elif 'cp' in denomination:
+            index_ = denomination.index('cp')
+            cp = int(denomination[:index_])
+
+    if gp > 0:
+        cp += gp * COPPER_TO_GOLD
+    if sp > 0:
+        cp += sp * COPPER_TO_SILVER
+    cost = cp
+
+    return cost
+
+
+def format_cost_for_user(item):
     """Return a string representation of the cost of item in argument, rounded down to the nearest
     denomination of gold (gp), silver(sp), or copper (cp) pieces.
     1 gold piece == 100 copper pieces.
@@ -74,14 +116,22 @@ class DamageTypeSerializer(serializers.ModelSerializer):
 class EquipmentSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.Equipment
-        fields = ('id', 'name', 'cost', 'weight', 'equipment_category')
+        fields = (
+            'id',
+            'name',
+            'cost',
+            'formatted_cost',
+            'weight',
+            'formatted_weight',
+            'equipment_category',
+        )
 
-    # Convert cost from copper into denominations of gold, silver, and copper.
-    cost = serializers.SerializerMethodField(method_name='_get_formatted_cost')
-    equipment_category = serializers.StringRelatedField(many=False)
-    weight = serializers.SerializerMethodField(method_name='_get_formatted_weight')
+    formatted_cost = serializers.SerializerMethodField(method_name='get_formatted_cost')
+    # equipment_category_name = serializers.StringRelatedField(many=False)
+    formatted_weight = serializers.SerializerMethodField(method_name='get_formatted_weight')
 
-    def _get_formatted_cost(self, equipment: models.Equipment):
+
+    def get_formatted_cost(self, equipment: models.Equipment):
         """Return a nicely readable representation of item cost.
 
         Calls function format_cost().
@@ -94,10 +144,10 @@ class EquipmentSerializer(serializers.ModelSerializer):
                 silver, and copper. ex: '1gp, 14sp, 2cp'.
         """
 
-        cost = format_cost(equipment)
+        cost = format_cost_for_user(equipment)
         return cost
 
-    def _get_formatted_weight(self, equipment: models.Equipment):
+    def get_formatted_weight(self, equipment: models.Equipment):
         """Return a nicely readable representation of item weight.
 
         Calls function format_weight().
@@ -143,9 +193,18 @@ class WeaponSerializer(serializers.ModelSerializer):
     cost = serializers.SerializerMethodField(method_name='get_formatted_cost')
     damage_type = serializers.StringRelatedField(many=False)
     max_damage = serializers.SerializerMethodField(method_name='get_max_damage')
-    properties = serializers.StringRelatedField(many=True)
+    properties = serializers.StringRelatedField(many=True, required=False)
     weapon_type = serializers.StringRelatedField(many=False)
     weight = serializers.SerializerMethodField(method_name='get_formatted_weight')
+
+    # def create(self, validated_data):
+    #     weapon = models.Weapon(**validated_data)
+    #     if weapon.cost:
+    #         weapon.cost = format_cost_for_storage(weapon)
+    #     else:
+    #         weapon.cost = 0
+    #     weapon.save()
+    #     return weapon
 
     def get_formatted_cost(self, weapon: models.Weapon):
         """Return a nicely readable representation of weapon cost.
@@ -159,7 +218,7 @@ class WeaponSerializer(serializers.ModelSerializer):
             cost (str): String representation of weapon cost nicely formatted into proper denominations of gold,
                 silver, and copper. ex: '1gp, 14sp, 2cp'.
         """
-        cost = format_cost(weapon)
+        cost = format_cost_for_user(weapon)
         return cost
 
     def get_formatted_weight(self, weapon: models.Weapon):

@@ -70,7 +70,7 @@ class Weapon(models.Model):
         null=True,
         validators=[MinValueValidator(0)]
     )
-    properties = models.ManyToManyField(WeaponProperty, null=True, blank=True)
+    properties = models.ManyToManyField(WeaponProperty, blank=True)
 
     def __str__(self):
         return self.name

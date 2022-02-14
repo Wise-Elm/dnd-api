@@ -1,52 +1,88 @@
 from django.shortcuts import get_object_or_404
-from django.http import HttpResponse
-from rest_framework import status
+from rest_framework import serializers, status
 from rest_framework.decorators import api_view
+from rest_framework.relations import StringRelatedField
 from rest_framework.response import Response
 from . import models
 from . import serializers
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def ability_score_list(request):
-    queryset = models.AbilityScore.objects.all()
-    serializer = serializers.AbilityScoreSerializer(queryset, many=True)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        queryset = models.AbilityScore.objects.all()
+        serializer = serializers.AbilityScoreSerializer(queryset, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = serializers.AbilityScoreSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view()
+@api_view(['GET', 'PUT'])
 def ability_score_detail(request, id):
     ability_score = get_object_or_404(models.AbilityScore, pk=id)
-    serializer = serializers.AbilityScoreSerializer(ability_score)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        serializer = serializers.AbilityScoreSerializer(ability_score)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = serializers.AbilityScoreSerializer(ability_score, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def damage_type_list(request):
-    queryset = models.DamageType.objects.all()
-    serializer = serializers.DamageTypeSerializer(queryset, many=True)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        queryset = models.DamageType.objects.all()
+        serializer = serializers.DamageTypeSerializer(queryset, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = serializers.DamageTypeSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view()
+@api_view(['GET', 'PUT'])
 def damage_type_detail(request, id):
     damage = get_object_or_404(models.DamageType, pk=id)
-    serializer = serializers.DamageTypeSerializer(damage)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        serializer = serializers.DamageTypeSerializer(damage)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = serializers.DamageTypeSerializer(damage, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
-@api_view()
+@api_view(['GET', 'POST'])
 def equipment_list(request):
-    queryset = models.Equipment.objects.select_related('equipment_category').all()
-    serializer = serializers.EquipmentSerializer(queryset, many=True)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        queryset = models.Equipment.objects.select_related('equipment_category').all()
+        serializer = serializers.EquipmentSerializer(queryset, many=True)
+        return Response(serializer.data)
+    elif request.method == 'POST':
+        serializer = serializers.EquipmentSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
 
 
-@api_view()
+@api_view(['GET', 'PUT'])
 def equipment_detail(request, id):
     equipment = get_object_or_404(models.Equipment, pk=id)
-    serializer = serializers.EquipmentSerializer(equipment)
-    return Response(serializer.data)
+    if request.method == 'GET':
+        serializer = serializers.EquipmentSerializer(equipment)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        serializer = serializers.EquipmentSerializer(equipment, data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data)
 
 
 @api_view()

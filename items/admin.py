@@ -45,7 +45,6 @@ class WeaponPropertyAdmin(admin.ModelAdmin):
     ordering = ['name']
     search_fields = ['name']
 
-
     @admin.display(ordering='weapon_count')
     def weapon_count(self, weaponproperty):
         url = (
@@ -143,14 +142,3 @@ class WeaponTypeAdmin(admin.ModelAdmin):
         return super().get_queryset(request).annotate(
             weapon_count=Count('weapon')
         )
-
-
-# admin.site.register(models.AbilityScore)
-# admin.site.register(models.Equipment)
-# admin.site.register(models.EquipmentCategory)
-# admin.site.register(models.Skill)
-# admin.site.register(models.WeaponProperty)
-# admin.site.register(models.Weapon)
-# admin.site.register(models.DamageType)
-# admin.site.register(models.WeaponType)
-
