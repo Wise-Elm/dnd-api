@@ -108,14 +108,15 @@ class AbilityScoreSerializer(serializers.ModelSerializer):
 
 
 class DamageTypeSerializer(serializers.ModelSerializer):
+    weapon_count = serializers.IntegerField(read_only=True)
+
     class Meta:
         model = models.DamageType
-        fields = ('id', 'name', 'description')
+        fields = ('id', 'name', 'weapon_count', 'description')
 
 
 class EquipmentSerializer(serializers.ModelSerializer):
     formatted_cost = serializers.SerializerMethodField(method_name='get_formatted_cost')
-    # equipment_category_name = serializers.StringRelatedField(many=False)
     formatted_weight = serializers.SerializerMethodField(method_name='get_formatted_weight')
 
     class Meta:
@@ -175,6 +176,10 @@ class SkillSerializer(serializers.ModelSerializer):
 
 
 class WeaponSerializer(serializers.ModelSerializer):
+    formatted_cost = serializers.SerializerMethodField(method_name='get_formatted_cost')
+    max_damage = serializers.SerializerMethodField(method_name='get_max_damage')
+    formatted_weight = serializers.SerializerMethodField(method_name='get_formatted_weight')
+
     class Meta:
         model = models.Weapon
         fields = (
@@ -191,20 +196,7 @@ class WeaponSerializer(serializers.ModelSerializer):
             'properties',
         )
 
-    formatted_cost = serializers.SerializerMethodField(method_name='get_formatted_cost')
-    max_damage = serializers.SerializerMethodField(method_name='get_max_damage')
-    formatted_weight = serializers.SerializerMethodField(method_name='get_formatted_weight')
-
-    # def create(self, validated_data):
-    #     weapon = models.Weapon(**validated_data)
-    #     if weapon.cost:
-    #         weapon.cost = format_cost_for_storage(weapon)
-    #     else:
-    #         weapon.cost = 0
-    #     weapon.save()
-    #     return weapon
-
-    def get_formatted_cost(self, weapon: models.Weapon):
+    def get_formatted_cost(self, weapon):
         """Return a nicely readable representation of weapon cost.
 
         Calls function format_cost().
@@ -219,7 +211,7 @@ class WeaponSerializer(serializers.ModelSerializer):
         cost = format_cost_for_user(weapon)
         return cost
 
-    def get_formatted_weight(self, weapon: models.Weapon):
+    def get_formatted_weight(self, weapon):
         """Return a nicely readable representation of item weight.
 
         Calls function format_weight().
@@ -234,7 +226,7 @@ class WeaponSerializer(serializers.ModelSerializer):
         weight = format_weight(weapon)
         return weight
 
-    def get_max_damage(self, weapon: models.Weapon):
+    def get_max_damage(self, weapon):
         """Return an integer representing the maximum possible damage allowable according to the weapons damage dice.
 
         Args:
