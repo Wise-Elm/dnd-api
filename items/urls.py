@@ -2,18 +2,18 @@ from django.urls import path
 from . import views
 
 urlpatterns = [
-    path('ability/', views.ability_score_list),
-    path('ability/<int:id>/', views.ability_score_detail),
-    path('damage/', views.damage_type_list),
-    path('damage/<int:id>/', views.damage_type_detail),
-    path('equipment/', views.equipment_list),
-    path('equipment/<int:id>/', views.equipment_detail),
-    path('equipment-category/', views.equipment_category_list),
-    path('equipment-category/<int:id>/', views.equipment_category_detail),
-    path('skill/', views.skill_list),
-    path('skill/<int:id>/', views.skill_detail),
-    path('weapon/', views.weapon_list),
-    path('weapon/<int:id>/', views.weapon_detail),
-    path('weapon-property/', views.weapon_property_list),
-    path('weapon-property/<int:id>/', views.weapon_property_detail)
+    path('ability/', views.AbilityScoreList.as_view()),
+    path('ability/<int:id>/', views.AbilityScoreDetail.as_view()),
+    path('damage/', views.DamageTypeList.as_view()),
+    path('damage/<int:id>/', views.DamageTypeDetail.as_view()),
+    path('equipment/', views.EquipmentList.as_view()),
+    path('equipment/<int:id>/', views.EquipmentDetail.as_view()),
+    path('equipment-category/', views.EquipmentCategoryList.as_view()),
+    path('equipment-category/<int:id>/', views.EquipmentCategoryDetail.as_view()),
+    path('skill/', views.SkillList.as_view()),
+    path('skill/<int:id>/', views.SkillDetail.as_view()),
+    path('weapon/', views.WeaponList.as_view()),
+    path('weapon/<int:id>/', views.WeaponDetail.as_view()),
+    path('weapon-property/', views.WeaponPropertyList.as_view()),
+    path('weapon-property/<int:id>/', views.WeaponPropertyDetail.as_view())
 ]

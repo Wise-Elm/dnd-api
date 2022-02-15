@@ -3,6 +3,8 @@ from django.db import models
 
 
 class AbilityScore(models.Model):
+    """Represents an instance of an Ability Score."""
+
     name = models.CharField(max_length=255)
     abbreviated_name = models.CharField(max_length=3)
     description = models.TextField(null=True, blank=True)
