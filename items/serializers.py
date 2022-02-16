@@ -113,6 +113,7 @@ class DamageTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = models.DamageType
         fields = ('id', 'name', 'weapon_count', 'description')
+        w = serializers.IntegerField(read_only=True)
 
 
 class EquipmentSerializer(serializers.ModelSerializer):

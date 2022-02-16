@@ -1,7 +1,8 @@
 from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from rest_framework import serializers, status
-from rest_framework.decorators import api_view
+from rest_framework.generics import ListCreateAPIView, RetrieveUpdateDestroyAPIView
+from rest_framework.mixins import ListModelMixin, CreateModelMixin
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
@@ -9,235 +10,165 @@ from . import models
 from . import serializers
 
 
-class AbilityScoreList(APIView):
-    """Display a list of Ability Scores based on items.models.AbilityScore.
+class AbilityScoreList(ListCreateAPIView):
+    """Display a list of Ability Score objects based on models.AbilityScore.
 
     /items/ability/
     """
 
-    def get(self, request):
-        queryset = models.AbilityScore.objects.all()
-        serializer = serializers.AbilityScoreSerializer(queryset, many=True)
-        return Response(serializer.data)
+    queryset = models.AbilityScore.objects.all()
+    serializer_class = serializers.AbilityScoreSerializer
 
-    def post(self, request):
-        serializer = serializers.AbilityScoreSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 
-class AbilityScoreDetail(APIView):
-    def get(self, request, id):
-        ability_score = get_object_or_404(models.AbilityScore, pk=id)
-        serializer = serializers.AbilityScoreSerializer(ability_score)
-        return Response(serializer.data)
+class AbilityScoreDetail(RetrieveUpdateDestroyAPIView):
+    """Display a Ability Score object corresponding to associated id, based on models.AbilityScore.
 
-    def put(self, request, id):
-        ability_score = get_object_or_404(models.AbilityScore, pk=id)
-        serializer = serializers.AbilityScoreSerializer(ability_score, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+    /items/ability/id
+    """
 
-    def delete(self, request, id):
-        ability_score = get_object_or_404(models.AbilityScore, pk=id)
-        ability_score.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    queryset = models.AbilityScore.objects.all()
+    serializer_class = serializers.AbilityScoreSerializer
 
 
-class DamageTypeList(APIView):
-    def get(self, request):
-        queryset = models.DamageType.objects.annotate(
-            weapon_count=Count('weapon')).\
-            all()
-        serializer = serializers.DamageTypeSerializer(queryset, many=True)
-        return Response(serializer.data)
+class DamageTypeList(ListCreateAPIView):
+    """Display a list of DamageType objects based on models.DamageType
 
-    def post(self, request):
-        serializer = serializers.DamageTypeSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    /items/damage/
+    """
+
+    queryset = models.DamageType.objects.annotate(weapon_count=Count('weapon')).all()
+    serializer_class = serializers.DamageTypeSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 
-class DamageTypeDetail(APIView):
-    def get(self, request, id):
-        damage = get_object_or_404(models.DamageType.objects.annotate(weapon_count=Count('weapon')), pk=id)
-        serializer = serializers.DamageTypeSerializer(damage)
-        return Response(serializer.data)
+class DamageTypeDetail(RetrieveUpdateDestroyAPIView):
+    """Display a DamageType object corresponding to associated id, based on models.DamageType.
 
-    def put(self, request, id):
-        damage = get_object_or_404(models.DamageType.objects.annotate(weapon_count=Count('weapon')), pk=id)
-        serializer = serializers.DamageTypeSerializer(damage, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+    /items/damage/id
+    """
 
-    def delete(self, request, id):
-        damage = get_object_or_404(models.DamageType.objects.annotate(weapon_count=Count('weapon')), pk=id)
-        damage.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    queryset = models.DamageType.objects.all()
+    serializer_class = serializers.DamageTypeSerializer
 
 
-class EquipmentList(APIView):
-    def get(self, request):
-        queryset = models.Equipment.objects.select_related('equipment_category').all()
-        serializer = serializers.EquipmentSerializer(queryset, many=True)
-        return Response(serializer.data)
+class EquipmentList(ListCreateAPIView):
+    """Display a list of Equipment objects based on models.Equipment
 
-    def post(self, request):
-        serializer = serializers.EquipmentSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    /items/equipment/
+    """
 
+    queryset = models.Equipment.objects.select_related('equipment_category').all()
+    serializer_class = serializers.EquipmentSerializer
 
-class EquipmentDetail(APIView):
-    def get(self, request, id):
-        equipment = get_object_or_404(models.Equipment, pk=id)
-        serializer = serializers.EquipmentSerializer(equipment)
-        return Response(serializer.data)
-
-    def put(self, request, id):
-        equipment = get_object_or_404(models.Equipment, pk=id)
-        serializer = serializers.EquipmentSerializer(equipment, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
-
-    def delete(self, request, id):
-        equipment = get_object_or_404(models.Equipment, pk=id)
-        equipment.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 
-class EquipmentCategoryList(APIView):
-    def get(self, request):
-        queryset = models.EquipmentCategory.objects.all()
-        serializer = serializers.EquipmentCategorySerializer(queryset, many=True)
-        return Response(serializer.data)
+class EquipmentDetail(RetrieveUpdateDestroyAPIView):
+    """Display a Equipment object corresponding to associated id, based on models.Equipment.
 
-    def post(self, request):
-        serializer = serializers.EquipmentCategorySerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    /items/equipment/id
+    """
+
+    queryset = models.Equipment.objects.all()
+    serializer_class = serializers.EquipmentSerializer
 
 
-class EquipmentCategoryDetail(APIView):
-    def get(self, request, id):
-        equipment_category = get_object_or_404(models.EquipmentCategory, pk=id)
-        serializer = serializers.EquipmentCategorySerializer(equipment_category)
-        return Response(serializer.data)
+class EquipmentCategoryList(ListCreateAPIView):
+    """Display a list of EquipmentCategory objects based on models.EquipmentCategory
 
-    def put(self, request, id):
-        equipment_category = get_object_or_404(models.EquipmentCategory, pk=id)
-        serializer = serializers.EquipmentSerializer(equipment_category, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+    /items/equipment-category/
+    """
 
-    def delete(self, request, id):
-        equipment_category = get_object_or_404(models.EquipmentCategory, pk=id)
-        equipment_category.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    queryset = models.EquipmentCategory.objects.all()
+    serializer_class = serializers.EquipmentCategorySerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 
-class SkillList(APIView):
-    def get(self, request):
-        queryset = models.Skill.objects.select_related('ability_score').all()
-        serializer = serializers.SkillSerializer(queryset, many=True)
-        return Response(serializer.data)
+class EquipmentCategoryDetail(RetrieveUpdateDestroyAPIView):
+    """Display a EquipmentCategory object corresponding to associated id, based on models.EquipmentCategory.
 
-    def post(self, request):
-        serializer = serializers.SkillSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    /items/equipment-category/id
+    """
+
+    queryset = models.EquipmentCategory.objects.all()
+    serializer_class = serializers.EquipmentCategorySerializer
 
 
-class SkillDetail(APIView):
-    def get(self, request, id):
-        skill = get_object_or_404(models.Skill, pk=id)
-        serializer = serializers.SkillSerializer(skill)
-        return Response(serializer.data)
+class SkillList(ListCreateAPIView):
+    """Display a list of Skill objects based on models.Skill
 
-    def put(self, request, id):
-        skill = get_object_or_404(models.Skill, pk=id)
-        serializer = serializers.SkillSerializer(skill, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+    /items/skill/
+    """
 
-    def delete(self, request, id):
-        skill = get_object_or_404(models.Skill, pk=id)
-        skill.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    queryset = models.Skill.objects.select_related('ability_score').all()
+    serializer_class = serializers.SkillSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 
-class WeaponList(APIView):
-    def get(self, request):
-        queryset = models.Weapon.objects.\
-            select_related('weapon_type', 'damage_type').\
-            prefetch_related('properties').\
-            all()
-        serializer = serializers.WeaponSerializer(queryset, many=True)
-        return Response(serializer.data)
+class SkillDetail(RetrieveUpdateDestroyAPIView):
+    """Display a Skill object corresponding to associated id, based on models.skill.
 
-    def post(self, request):
-        serializer = serializers.WeaponSerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    /items/skill/id
+    """
+
+    queryset = models.Skill.objects.all()
+    serializer_class = serializers.SkillSerializer
 
 
-class WeaponDetail(APIView):
-    def get(self, request, id):
-        weapon = get_object_or_404(models.Weapon, pk=id)
-        serializer = serializers.WeaponSerializer(weapon)
-        return Response(serializer.data)
+class WeaponList(ListCreateAPIView):
+    """Display a list of Weapon objects based on models.Weapon
 
-    def put(self, request, id):
-        weapon = get_object_or_404(models.Weapon, pk=id)
-        serializer = serializers.WeaponSerializer(weapon, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+    /items/weapon/
+    """
 
-    def delete(self, request, id):
-        weapon = get_object_or_404(models.Weapon, pk=id)
-        weapon.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    queryset = models.Weapon.objects.\
+        select_related('weapon_type', 'damage_type').\
+        prefetch_related('properties').\
+        all()
+    serializer_class = serializers.WeaponSerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
 
 
-class WeaponPropertyList(APIView):
-    def get(self, request):
-        queryset = models.WeaponProperty.objects.all()
-        serializer = serializers.WeaponPropertySerializer(queryset, many=True)
-        return Response(serializer.data)
+class WeaponDetail(RetrieveUpdateDestroyAPIView):
+    """Display a Weapon object corresponding to associated id, based on models.Weapon.
 
-    def post(self, request):
-        serializer = serializers.WeaponPropertySerializer(data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    /items/weapon/id
+    """
+
+    queryset = models.Weapon.objects.all()
+    serializer_class = serializers.WeaponSerializer
 
 
-class WeaponPropertyDetail(APIView):
-    def get(self, request, id):
-        weapon_property = get_object_or_404(models.WeaponProperty, pk=id)
-        serializer = serializers.WeaponPropertySerializer(weapon_property)
-        return Response(serializer.data)
+class WeaponPropertyList(ListCreateAPIView):
+    """Display a list of WeaponProperty objects based on models.WeaponProperty
 
-    def put(self, request, id):
-        weapon_property = get_object_or_404(models.WeaponProperty, pk=id)
-        serializer = serializers.WeaponPropertySerializer(weapon_property, data=request.data)
-        serializer.is_valid(raise_exception=True)
-        serializer.save()
-        return Response(serializer.data)
+    /items/weapon-property/
+    """
 
-    def delete(self, request, id):
-        weapon_property = get_object_or_404(models.WeaponProperty, pk=id)
-        weapon_property.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+    queryset = models.WeaponProperty.objects.all()
+    serializer_class = serializers.WeaponPropertySerializer
+
+    def get_serializer_context(self):
+        return {'request': self.request}
+
+
+class WeaponPropertyDetail(RetrieveUpdateDestroyAPIView):
+    """Display a WeaponProperty object corresponding to associated id, based on models.WeaponProperty.
+
+    /items/weapon-property/id
+    """
+
+    queryset = models.WeaponProperty.objects.all()
+    serializer_class = serializers.WeaponPropertySerializer
