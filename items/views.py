@@ -9,8 +9,11 @@ class AbilityScoreViewSet(ModelViewSet):
     """
     Display a single AbilityScore object if id is provided, otherwise
     display a list of AbilityScore objects based on models.AbilityScore.
-
-    /items/ability/id
+        Example:
+            Returns list of AbilityScore objects:
+                /items/ability/
+            Returns single AbilityScore object based on id:
+                /items/ability/id
     """
 
     queryset = AbilityScore.objects.all()
@@ -24,8 +27,11 @@ class DamageTypeViewSet(ModelViewSet):
     """
     Display a single DamageType object if id is provided, otherwise display
     a list of DamageType objects based on models.DamageType.
-
-    /items/damage/id
+        Example:
+            Returns list of DamageType objects:
+                /items/damage/
+            Returns single DamageType object based on id:
+                /items/damage/id
     """
 
     queryset = DamageType.objects.annotate(weapon_count=Count('weapon')).all()
@@ -40,8 +46,10 @@ class EquipmentViewSet(ModelViewSet):
     Display a single Equipment object if id is provided, otherwise display
     a list of Equipment objects based on models.Equipment.
         Example:
-        /items/equipment/   Returns list of Equipment objects.
-        /items/equipment/id     Returns single Equipment object based on id.
+            Returns list of Equipment objects:
+                /items/equipment/
+            Returns single Equipment object based on id:
+                /items/equipment/id
 
     Filter Equipment objects by Equipment Category by appending
     /?equipment_category=id.
@@ -67,8 +75,11 @@ class EquipmentCategoryViewSet(ModelViewSet):
     Display a single EquipmentCategory object if id is provided, otherwise
     display a list of EquipmentCategory objects based on
     models.EquipmentCategory.
-
-    /items/equipment-category/id
+        Example:
+            Returns list of EquipmentCategory objects:
+                /items/equipment-category
+            Returns single EquipmentCategory object based on id:
+                /items/equipment-category/id
     """
 
     queryset = EquipmentCategory.objects.all()
@@ -83,12 +94,12 @@ class SkillViewSet(ModelViewSet):
     Display a single Skill object if id is provided, otherwise display a
     list of skill objects based on models.skill.
         Example:
-        /items/skill/   Returns list of Skill objects.
-        /items/skill/id     Returns single Skill object based on id.
+            /items/skill/   Returns list of Skill objects.
+            /items/skill/id     Returns single Skill object based on id.
 
     Filter Skill objects by Ability Score by appending /?ability_score=id.
         Example:
-        /items/skill/?ability_score=id
+            /items/skill/?ability_score=id
     """
 
     serializer_class = SkillSerializer
@@ -109,7 +120,10 @@ class WeaponViewSet(ModelViewSet):
     Display a single Weapon object if id is provided, otherwise display a
     list of Weapon objects based on models.Weapon.
     Example:
-        /items/weapon/id
+        Returns list of Weapon objects:
+            /items/weapon/
+        Return single Weapon object based on id:
+            /items/weapon/id
 
     Filter Weapon objects by Weapon Type by appending /?weapon_type=id.
         Example:
@@ -151,9 +165,10 @@ class WeaponPropertyViewSet(ModelViewSet):
     Display a single WeaponProperty object if id is provided, otherwise
     display a list of WeaponProperty objects based on models.WeaponProperty.
         Example:
-            /items/weapon-property  Returns list of WeaponProperty objects.
-            /items/weapon-property/id  Returns a WeaponProperty object based on
-                id.
+            Returns list of WeaponProperty objects:
+                /items/weapon-property
+            Returns a WeaponProperty object based on id.
+                /items/weapon-property/id
     """
 
     queryset = WeaponProperty.objects.all()
