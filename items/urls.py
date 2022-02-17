@@ -3,12 +3,19 @@ from . import views
 
 router = DefaultRouter()
 
-router.register('ability', views.AbilityScoreViewSet)
-router.register('damage', views.DamageTypeViewSet)
-router.register('equipment', views.EquipmentViewSet)
-router.register('equipment-category', views.EquipmentViewSet)
-router.register('skill', views.SkillViewSet)
-router.register('weapon', views.WeaponViewSet)
-router.register('weapon-property', views.WeaponPropertyViewSet)
+router.register('ability', views.AbilityScoreViewSet,
+                basename='ability')
+router.register('damage', views.DamageTypeViewSet,
+                basename='damage')
+router.register('equipment', views.EquipmentViewSet,
+                basename='equipment')
+router.register('equipment-category', views.EquipmentCategoryViewSet,
+                basename='equipment-category')
+router.register('skill', views.SkillViewSet,
+                basename='skill')
+router.register('weapon', views.WeaponViewSet,
+                basename='weapon')
+router.register('weapon-property', views.WeaponPropertyViewSet,
+                basename='weapon-property')
 
 urlpatterns = router.urls

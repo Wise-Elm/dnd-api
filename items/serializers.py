@@ -7,7 +7,8 @@ COPPER_TO_SILVER = 10  # Amount of copper in 1 silver piece.
 
 
 def format_cost_for_storage(item):
-    """Return an integer representation of the cost of item in argument.
+    """
+    Return an integer representation of the cost of item in argument.
     1 gold piece == 100 copper pieces.
     1 silver piece == 10 copper pieces.
 
@@ -49,8 +50,10 @@ def format_cost_for_storage(item):
 
 
 def format_cost_for_user(item):
-    """Return a string representation of the cost of item in argument, rounded down to the nearest
-    denomination of gold (gp), silver(sp), or copper (cp) pieces.
+    """
+    Return a string representation of the cost of item in argument, rounded
+    down to the nearest denomination of gold (gp), silver(sp), or copper (cp)
+    pieces.
     1 gold piece == 100 copper pieces.
     1 silver piece == 10 copper pieces.
 
@@ -88,7 +91,9 @@ def format_cost_for_user(item):
 
 
 def format_weight(item):
-    """Return item weight as a nicely readable string showing weight in pounds (lb).
+    """
+    Return item weight as a nicely readable string showing weight in pounds
+    (lb).
 
     Args:
         item (object): Item object with weight a weight attribute.
@@ -117,8 +122,10 @@ class DamageTypeSerializer(serializers.ModelSerializer):
 
 
 class EquipmentSerializer(serializers.ModelSerializer):
-    formatted_cost = serializers.SerializerMethodField(method_name='get_formatted_cost')
-    formatted_weight = serializers.SerializerMethodField(method_name='get_formatted_weight')
+    formatted_cost = serializers.SerializerMethodField(
+        method_name='get_formatted_cost')
+    formatted_weight = serializers.SerializerMethodField(
+        method_name='get_formatted_weight')
 
     class Meta:
         model = models.Equipment
@@ -133,7 +140,8 @@ class EquipmentSerializer(serializers.ModelSerializer):
         )
 
     def get_formatted_cost(self, equipment: models.Equipment):
-        """Return a nicely readable representation of item cost.
+        """
+        Return a nicely readable representation of item cost.
 
         Calls function format_cost().
 
@@ -141,15 +149,17 @@ class EquipmentSerializer(serializers.ModelSerializer):
             equipment (obj): Equipment object.
 
         Returns:
-            cost (str): String representation of equipment cost nicely formatted into proper denominations of gold,
-                silver, and copper. ex: '1gp, 14sp, 2cp'.
+            cost (str): String representation of equipment cost nicely
+                formatted into proper denominations of gold, silver, and
+                copper. ex: '1gp, 14sp, 2cp'.
         """
 
         cost = format_cost_for_user(equipment)
         return cost
 
     def get_formatted_weight(self, equipment: models.Equipment):
-        """Return a nicely readable representation of item weight.
+        """
+        Return a nicely readable representation of item weight.
 
         Calls function format_weight().
 
@@ -157,7 +167,8 @@ class EquipmentSerializer(serializers.ModelSerializer):
             equipment (obj): Equipment object.
 
         Returns:
-            weight (str): String representation of equipment weight nicely formatted.
+            weight (str): String representation of equipment weight nicely
+            formatted.
         """
 
         weight = format_weight(equipment)
@@ -177,9 +188,12 @@ class SkillSerializer(serializers.ModelSerializer):
 
 
 class WeaponSerializer(serializers.ModelSerializer):
-    formatted_cost = serializers.SerializerMethodField(method_name='get_formatted_cost')
-    max_damage = serializers.SerializerMethodField(method_name='get_max_damage')
-    formatted_weight = serializers.SerializerMethodField(method_name='get_formatted_weight')
+    formatted_cost = serializers.SerializerMethodField(
+        method_name='get_formatted_cost')
+    max_damage = serializers.SerializerMethodField(
+        method_name='get_max_damage')
+    formatted_weight = serializers.SerializerMethodField(
+        method_name='get_formatted_weight')
 
     class Meta:
         model = models.Weapon
@@ -198,7 +212,8 @@ class WeaponSerializer(serializers.ModelSerializer):
         )
 
     def get_formatted_cost(self, weapon):
-        """Return a nicely readable representation of weapon cost.
+        """
+        Return a nicely readable representation of weapon cost.
 
         Calls function format_cost().
 
@@ -206,14 +221,17 @@ class WeaponSerializer(serializers.ModelSerializer):
             weapon (obj): Weapon object.
 
         Returns:
-            cost (str): String representation of weapon cost nicely formatted into proper denominations of gold,
-                silver, and copper. ex: '1gp, 14sp, 2cp'.
+            cost (str): String representation of weapon cost nicely formatted
+                into proper denominations of gold, silver, and copper. ex:
+                '1gp, 14sp, 2cp'.
         """
+
         cost = format_cost_for_user(weapon)
         return cost
 
     def get_formatted_weight(self, weapon):
-        """Return a nicely readable representation of item weight.
+        """
+        Return a nicely readable representation of item weight.
 
         Calls function format_weight().
 
@@ -221,24 +239,29 @@ class WeaponSerializer(serializers.ModelSerializer):
             weapon (obj): weapon object.
 
         Returns:
-            weight (str): String representation of weapon weight nicely formatted.
+            weight (str): String representation of weapon weight nicely
+            formatted.
         """
 
         weight = format_weight(weapon)
         return weight
 
     def get_max_damage(self, weapon):
-        """Return an integer representing the maximum possible damage allowable according to the weapons damage dice.
+        """
+        Return an integer representing the maximum possible damage allowable
+        according to the weapons damage dice.
 
         Args:
             weapon (obj): Weapon object.
 
         Returns:
-            max_damage (int): Integer representing the maximum allowable damage according to the weapons damage dice.
+            max_damage (int): Integer representing the maximum allowable damage
+                according to the weapons damage dice.
         """
 
         if weapon.damage:
-            num_and_dice = str(weapon.damage).split('d')  # num_and_dice: list['number of dice', 'dice type']
+            # num_and_dice: list['number of dice', 'dice type']
+            num_and_dice = str(weapon.damage).split('d')
             max_damage = int(num_and_dice[0]) * int(num_and_dice[1])
             return max_damage
 
