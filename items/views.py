@@ -1,6 +1,10 @@
 from django.db.models import Count
+from rest_framework.filters import SearchFilter
 from rest_framework.viewsets import ModelViewSet
 
+from django_filters.rest_framework import DjangoFilterBackend
+
+from .filters import EquipmentFilter, WeaponFilter
 from .models import *
 from .serializers import *
 
@@ -18,6 +22,8 @@ class AbilityScoreViewSet(ModelViewSet):
 
     queryset = AbilityScore.objects.all()
     serializer_class = AbilityScoreSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields = ['name']
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -36,6 +42,8 @@ class DamageTypeViewSet(ModelViewSet):
 
     queryset = DamageType.objects.annotate(weapon_count=Count('weapon')).all()
     serializer_class = DamageTypeSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields = ['name']
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -57,14 +65,18 @@ class EquipmentViewSet(ModelViewSet):
         /items/equipment/?equipment_category=id
     """
 
+    queryset = Equipment.objects.all()
     serializer_class = EquipmentSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_class = EquipmentFilter
+    search_fields = ['name']
 
-    def get_queryset(self):
-        queryset = Equipment.objects.all()
-        category_id = self.request.query_params.get('equipment_category')
-        if category_id is not None:
-            queryset = queryset.filter(equipment_category_id=category_id)
-        return queryset
+    # def get_queryset(self):
+    #     queryset = Equipment.objects.all()
+    #     category_id = self.request.query_params.get('equipment_category')
+    #     if category_id is not None:
+    #         queryset = queryset.filter(equipment_category_id=category_id)
+    #     return queryset
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -84,6 +96,8 @@ class EquipmentCategoryViewSet(ModelViewSet):
 
     queryset = EquipmentCategory.objects.all()
     serializer_class = EquipmentCategorySerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields = ['name']
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -102,14 +116,18 @@ class SkillViewSet(ModelViewSet):
             /items/skill/?ability_score=id
     """
 
+    queryset = Skill.objects.all()
     serializer_class = SkillSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['ability_score_id']
+    search_fields = ['name']
 
-    def get_queryset(self):
-        queryset = Skill.objects.all()
-        ability_score_id = self.request.query_params.get('ability_score')
-        if ability_score_id is not None:
-            queryset = queryset.filter(ability_score_id=ability_score_id)
-        return queryset
+    # def get_queryset(self):
+    #     queryset = Skill.objects.all()
+    #     ability_score_id = self.request.query_params.get('ability_score')
+    #     if ability_score_id is not None:
+    #         queryset = queryset.filter(ability_score_id=ability_score_id)
+    #     return queryset
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -136,25 +154,35 @@ class WeaponViewSet(ModelViewSet):
     Filter Weapon objects by Weapon Property Type by appending
     /?property_type=id.
         Example:
-            /items/weapon/?damage_type=id
+            /items/weapon/?property_type=id
     """
 
+    queryset = Weapon.objects.prefetch_related('properties').all()
     serializer_class = WeaponSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_class = WeaponFilter
+    search_fields = [
+        'damage_type__name',
+        'name',
+        'properties__name',
+        'weapon_type__name'
+        ]
 
-    def get_queryset(self):
-        queryset = Weapon.objects.all()
-        weapon_type_id = self.request.query_params.get('weapon_type')
-        damage_type_id = self.request.query_params.get('damage_type')
-        property_type_id = self.request.query_params.get('property_type')
-        if weapon_type_id is not None:
-            queryset = queryset.filter(weapon_type_id=weapon_type_id)
-            return queryset
-        elif damage_type_id is not None:
-            queryset = queryset.filter(damage_type_id=damage_type_id)
-            return queryset
-        elif property_type_id is not None:
-            queryset = queryset.filter(properties=property_type_id)
-        return queryset
+    # filterset_fields = ['weapon_type_id', 'damage_type_id', 'properties']
+    # def get_queryset(self):
+    #     queryset = Weapon.objects.prefetch_related('properties').all()
+    #     weapon_type_id = self.request.query_params.get('weapon_type')
+    #     damage_type_id = self.request.query_params.get('damage_type')
+    #     property_type_id = self.request.query_params.get('property_type')
+    #     if weapon_type_id is not None:
+    #         queryset = queryset.filter(weapon_type_id=weapon_type_id)
+    #         return queryset
+    #     elif damage_type_id is not None:
+    #         queryset = queryset.filter(damage_type_id=damage_type_id)
+    #         return queryset
+    #     elif property_type_id is not None:
+    #         queryset = queryset.filter(properties=property_type_id)
+    #     return queryset
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -173,6 +201,8 @@ class WeaponPropertyViewSet(ModelViewSet):
 
     queryset = WeaponProperty.objects.all()
     serializer_class = WeaponPropertySerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields = ['name']
 
     def get_serializer_context(self):
         return {'request': self.request}
