@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from . import models
+from .models import *
 
 # Price conversions from copper pieces to gold and silver pieces.
 COPPER_TO_GOLD = 100  # Amount of copper in 1 gold piece.
@@ -108,7 +108,7 @@ def format_weight(item):
 
 class AbilityScoreSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.AbilityScore
+        model = AbilityScore
         fields = ('id', 'abbreviated_name', 'name', 'description')
 
 
@@ -116,7 +116,7 @@ class DamageTypeSerializer(serializers.ModelSerializer):
     weapon_count = serializers.IntegerField(read_only=True)
 
     class Meta:
-        model = models.DamageType
+        model = DamageType
         fields = ('id', 'name', 'weapon_count', 'description')
         w = serializers.IntegerField(read_only=True)
 
@@ -128,7 +128,7 @@ class EquipmentSerializer(serializers.ModelSerializer):
         method_name='get_formatted_weight')
 
     class Meta:
-        model = models.Equipment
+        model = Equipment
         fields = (
             'id',
             'name',
@@ -139,7 +139,7 @@ class EquipmentSerializer(serializers.ModelSerializer):
             'equipment_category',
         )
 
-    def get_formatted_cost(self, equipment: models.Equipment):
+    def get_formatted_cost(self, equipment: Equipment):
         """
         Return a nicely readable representation of item cost.
 
@@ -157,7 +157,7 @@ class EquipmentSerializer(serializers.ModelSerializer):
         cost = format_cost_for_user(equipment)
         return cost
 
-    def get_formatted_weight(self, equipment: models.Equipment):
+    def get_formatted_weight(self, equipment: Equipment):
         """
         Return a nicely readable representation of item weight.
 
@@ -177,14 +177,26 @@ class EquipmentSerializer(serializers.ModelSerializer):
 
 class EquipmentCategorySerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.EquipmentCategory
+        model = EquipmentCategory
         fields = ('id', 'name')
 
 
 class SkillSerializer(serializers.ModelSerializer):
     class Meta:
-        model = models.Skill
+        model = Skill
         fields = ('id', 'name', 'ability_score', 'description')
+
+
+class WeaponTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WeaponType
+        fields = ('id', 'name')
+
+
+class WeaponPropertySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = WeaponProperty
+        fields = ('id', 'name', 'description')
 
 
 class WeaponSerializer(serializers.ModelSerializer):
@@ -194,9 +206,11 @@ class WeaponSerializer(serializers.ModelSerializer):
         method_name='get_max_damage')
     formatted_weight = serializers.SerializerMethodField(
         method_name='get_formatted_weight')
+    damage_type = DamageTypeSerializer()  # Display DamageType object not just id.
+    weapon_type = WeaponTypeSerializer()
 
     class Meta:
-        model = models.Weapon
+        model = Weapon
         fields = (
             'id',
             'name',
@@ -267,9 +281,3 @@ class WeaponSerializer(serializers.ModelSerializer):
 
         max_damage = 0
         return max_damage
-
-
-class WeaponPropertySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = models.WeaponProperty
-        fields = ('id', 'name', 'description')

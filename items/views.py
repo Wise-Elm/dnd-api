@@ -1,11 +1,12 @@
 from django.db.models import Count
-from rest_framework.filters import SearchFilter
+from rest_framework.filters import OrderingFilter, SearchFilter
 from rest_framework.viewsets import ModelViewSet
 
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .filters import EquipmentFilter, WeaponFilter
 from .models import *
+from .pagination import DefaultPagination
 from .serializers import *
 
 
@@ -67,9 +68,10 @@ class EquipmentViewSet(ModelViewSet):
 
     queryset = Equipment.objects.all()
     serializer_class = EquipmentSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     filterset_class = EquipmentFilter
     search_fields = ['name']
+    ordering_fields = ['cost', 'weight', 'equipment_category']
 
     # def get_queryset(self):
     #     queryset = Equipment.objects.all()
@@ -157,16 +159,26 @@ class WeaponViewSet(ModelViewSet):
             /items/weapon/?property_type=id
     """
 
-    queryset = Weapon.objects.prefetch_related('properties').all()
+    queryset = Weapon.objects.\
+        select_related('damage_type', 'weapon_type').\
+        prefetch_related('properties').\
+        all()
     serializer_class = WeaponSerializer
-    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filter_backends = [DjangoFilterBackend, OrderingFilter, SearchFilter]
     filterset_class = WeaponFilter
+    pagination_class = DefaultPagination
     search_fields = [
         'damage_type__name',
         'name',
         'properties__name',
         'weapon_type__name'
         ]
+    ordering_fields = [
+        'cost',
+        'damage_type',
+        'weapon_type',
+        'weight'
+    ]
 
     # filterset_fields = ['weapon_type_id', 'damage_type_id', 'properties']
     # def get_queryset(self):
@@ -206,3 +218,10 @@ class WeaponPropertyViewSet(ModelViewSet):
 
     def get_serializer_context(self):
         return {'request': self.request}
+
+
+class WeaponTypeViewSet(ModelViewSet):
+    queryset = WeaponType.objects.all()
+    serializer_class = WeaponTypeSerializer
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    search_fields = ['name']

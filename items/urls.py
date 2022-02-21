@@ -17,5 +17,7 @@ router.register('weapon', views.WeaponViewSet,
                 basename='weapon')
 router.register('weapon-property', views.WeaponPropertyViewSet,
                 basename='weapon-property')
+router.register('weapon-type', views.WeaponTypeViewSet,
+                basename='weapon-property')
 
 urlpatterns = router.urls
