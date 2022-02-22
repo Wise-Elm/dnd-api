@@ -12,6 +12,13 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 
+
+with open('./secret_key.txt') as f:  # Get secret key.
+    SK = f.read().strip()
+
+with open('./db_password.txt') as f:  # Get database password.
+    DB_PASSWORD = f.read().strip()
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -20,7 +27,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-x561+&^x#7x0%f8-=aw@ahj6+981)ae&jr6l*!vk_bjaxr-jsf'
+SECRET_KEY = SK
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -91,7 +98,7 @@ DATABASES = {
         'NAME': 'dnd5e',
         'HOST': 'localhost',
         'USER': 'root',
-        'PASSWORD': 'Hunter55!'
+        'PASSWORD': DB_PASSWORD
     }
 }
 
