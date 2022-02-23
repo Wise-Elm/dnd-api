@@ -8,6 +8,9 @@ https://github.com/Wise-Elm/
 ### Program working title: 
 dnd5eapi
 
+### Please see a working version of this API:
+http://drsteeds.pythonanywhere.com/items
+
 ### Status:
 This program is currently in production, and is primarily derived for the 
 purpose of learning Django. dnd5eapi is intended to be a proof of concept, and
