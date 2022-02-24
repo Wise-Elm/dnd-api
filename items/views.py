@@ -5,7 +5,6 @@ from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .filters import EquipmentFilter, WeaponFilter
-from .models import *
 from .pagination import DefaultPagination
 from .serializers import *
 
@@ -73,13 +72,6 @@ class EquipmentViewSet(ModelViewSet):
     search_fields = ['name']
     ordering_fields = ['cost', 'weight', 'equipment_category']
 
-    # def get_queryset(self):
-    #     queryset = Equipment.objects.all()
-    #     category_id = self.request.query_params.get('equipment_category')
-    #     if category_id is not None:
-    #         queryset = queryset.filter(equipment_category_id=category_id)
-    #     return queryset
-
     def get_serializer_context(self):
         return {'request': self.request}
 
@@ -123,13 +115,6 @@ class SkillViewSet(ModelViewSet):
     filter_backends = [DjangoFilterBackend, SearchFilter]
     filterset_fields = ['ability_score_id']
     search_fields = ['name']
-
-    # def get_queryset(self):
-    #     queryset = Skill.objects.all()
-    #     ability_score_id = self.request.query_params.get('ability_score')
-    #     if ability_score_id is not None:
-    #         queryset = queryset.filter(ability_score_id=ability_score_id)
-    #     return queryset
 
     def get_serializer_context(self):
         return {'request': self.request}
@@ -179,22 +164,6 @@ class WeaponViewSet(ModelViewSet):
         'weapon_type',
         'weight'
     ]
-
-    # filterset_fields = ['weapon_type_id', 'damage_type_id', 'properties']
-    # def get_queryset(self):
-    #     queryset = Weapon.objects.prefetch_related('properties').all()
-    #     weapon_type_id = self.request.query_params.get('weapon_type')
-    #     damage_type_id = self.request.query_params.get('damage_type')
-    #     property_type_id = self.request.query_params.get('property_type')
-    #     if weapon_type_id is not None:
-    #         queryset = queryset.filter(weapon_type_id=weapon_type_id)
-    #         return queryset
-    #     elif damage_type_id is not None:
-    #         queryset = queryset.filter(damage_type_id=damage_type_id)
-    #         return queryset
-    #     elif property_type_id is not None:
-    #         queryset = queryset.filter(properties=property_type_id)
-    #     return queryset
 
     def get_serializer_context(self):
         return {'request': self.request}
