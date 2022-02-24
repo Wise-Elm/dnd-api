@@ -5,8 +5,12 @@ from rest_framework.viewsets import ModelViewSet
 from django_filters.rest_framework import DjangoFilterBackend
 
 from .filters import EquipmentFilter, WeaponFilter
+from .models import AbilityScore, DamageType, Equipment, EquipmentCategory, \
+    Skill, Weapon, WeaponProperty, WeaponType
 from .pagination import DefaultPagination
-from .serializers import *
+from .serializers import AbilityScoreSerializer, DamageTypeSerializer, \
+    EquipmentCategorySerializer, EquipmentSerializer, SkillSerializer, \
+    WeaponSerializer, WeaponPropertySerializer, WeaponTypeSerializer
 
 
 class AbilityScoreViewSet(ModelViewSet):

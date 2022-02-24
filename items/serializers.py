@@ -1,5 +1,7 @@
 from rest_framework import serializers
-from .models import *
+
+from .models import AbilityScore, DamageType, Equipment, EquipmentCategory, \
+    Skill, Weapon, WeaponProperty, WeaponType
 
 # Price conversions from copper pieces to gold and silver pieces.
 COPPER_TO_GOLD = 100  # Amount of copper in 1 gold piece.
@@ -13,20 +15,23 @@ def format_cost_for_storage(item):
     1 silver piece == 10 copper pieces.
 
     Args:
-         item(obj): item object with a cost attribute.
+         item (obj): item object with a cost attribute.
 
     Returns:
         cost (int): Integer representation of the item cost.
      """
 
+    # Return if item.cost is integer. Input is already in cp format.
     if item.cost is int:
         cost = item.cost
         return cost
 
+    # Return - skip calculations - when items.cost is 0.
     if item.cost == '0':
         cost = int(item.cost)
         return cost
 
+    # Split item.cost into denominations of gp, sp, and cp.
     cp, sp, gp = 0, 0, 0
     cost_in_all = item.cost.split()
     for denomination in cost_in_all:
@@ -40,6 +45,7 @@ def format_cost_for_storage(item):
             index_ = denomination.index('cp')
             cp = int(denomination[:index_])
 
+    # Convert and sum all denominations together into cp.
     if gp > 0:
         cp += gp * COPPER_TO_GOLD
     if sp > 0:
@@ -58,16 +64,18 @@ def format_cost_for_user(item):
     1 silver piece == 10 copper pieces.
 
     Args:
-         item(obj): item object with a cost attribute.
+         item (obj): item object with a cost attribute.
 
     Returns:
         cost (str): Nicely formatted string representation of the item cost.
      """
 
+    # Return 0 when no conversion is needed.
     if int(item.cost) is None or int(item.cost) == 0:
         cost = '0'
         return cost
 
+    # Covert cp into sp and gp. (Rather than 1001cp, --> cp, sp, gp = 1, 0, 10)
     cp, sp, gp = 0, 0, 0
     cost_in_copper = int(item.cost)
     while cost_in_copper >= COPPER_TO_GOLD:  # Convert copper to gold.
@@ -78,6 +86,8 @@ def format_cost_for_user(item):
         cost_in_copper -= COPPER_TO_SILVER
     cp = cost_in_copper  # Remainder is leftover cost in copper.
 
+    # Create nicely formatted string for user.
+    # cp, sp, gp = 1, 0, 10 --> cost = '10gp, 1cp'
     cost = ''
     if gp > 0:
         cost += str(gp) + 'gp, '
@@ -85,8 +95,8 @@ def format_cost_for_user(item):
         cost += str(sp) + 'sp, '
     if cp > 0:
         cost += str(cp) + 'cp '
-
     cost = cost.lstrip().rstrip(' ,')
+
     return cost
 
 
@@ -107,12 +117,36 @@ def format_weight(item):
 
 
 class AbilityScoreSerializer(serializers.ModelSerializer):
+    """
+    Serialize models.AbilityScore.
+
+    Example:
+        {
+        "id": 1,
+        "abbreviated_name": "CHA",
+        "name": "Charisma",
+        "description": "Charisma measures your ability to interact ...",
+        }
+    """
+
     class Meta:
         model = AbilityScore
         fields = ('id', 'abbreviated_name', 'name', 'description')
 
 
 class DamageTypeSerializer(serializers.ModelSerializer):
+    """
+    Serialize models.DamageType.
+
+    Example:
+        {
+        "id": 1,
+        "name": "Acid",
+        "weapon_count": 0,
+        "description": "The corrosive spray of a black dragon's breath ...",
+        }
+    """
+
     weapon_count = serializers.IntegerField(read_only=True)
 
     class Meta:
@@ -122,6 +156,21 @@ class DamageTypeSerializer(serializers.ModelSerializer):
 
 
 class EquipmentSerializer(serializers.ModelSerializer):
+    """
+    Serialize models.Equipment.
+
+    Example:
+        {
+        "id": 1,
+        "name": "Abacus",
+        "cost": 200,
+        "formatted_cost": "2gp",
+        "weight": 2,
+        "formatted_weight": "2lb",
+        "equipment_category": 1,
+        }
+    """
+
     formatted_cost = serializers.SerializerMethodField(
         method_name='get_formatted_cost')
     formatted_weight = serializers.SerializerMethodField(
@@ -176,30 +225,102 @@ class EquipmentSerializer(serializers.ModelSerializer):
 
 
 class EquipmentCategorySerializer(serializers.ModelSerializer):
+    """
+    Serialize models.EquipmentCategory.
+
+    Example:
+        {
+        "id": 1,
+        "name": "Adventuring Gear",,
+        }
+    """
+
     class Meta:
         model = EquipmentCategory
         fields = ('id', 'name')
 
 
 class SkillSerializer(serializers.ModelSerializer):
+    """
+    Serialize models.Skill.
+
+    Example:
+        {
+        "id": 2,
+        "name": "Acrobatics",
+        "ability_score": 3,
+        "description": "Your Dexterity (Acrobatics) check covers your ...",
+        }
+    """
+
     class Meta:
         model = Skill
         fields = ('id', 'name', 'ability_score', 'description')
 
 
 class WeaponTypeSerializer(serializers.ModelSerializer):
+    """
+    Serialize models.WeaponType.
+
+    Example:
+        {
+        "id": 3,
+        "name": "Martial Melee Weapons",
+        }
+    """
+
     class Meta:
         model = WeaponType
         fields = ('id', 'name')
 
 
 class WeaponPropertySerializer(serializers.ModelSerializer):
+    """
+    Serialize models.WeaponProperty.
+
+    Example:
+        {
+        "id": 1,
+        "name": "Ammunition",
+        "description": "You can use a weapon that has the ...",
+        }
+    """
+
     class Meta:
         model = WeaponProperty
         fields = ('id', 'name', 'description')
 
 
 class WeaponSerializer(serializers.ModelSerializer):
+    """
+    Serialize models.Weapon.
+
+    Example:
+        {
+            "id": 24,
+            "name": "Battleaxe",
+            "weapon_type": {
+                "id": 3,
+                "name": "Martial Melee Weapons"
+            },
+            "cost": 1000,
+            "formatted_cost": "10gp",
+            "damage": "1d8",
+            "max_damage": 8,
+            "damage_type": {
+                "id": 12,
+                "name": "Slashing",
+                "description": "Swords, axes, and monsters' claws deal
+                slashing damage."
+            },
+            "weight": 4.0,
+            "formatted_weight": "4.00lb",
+            "properties": [
+                11
+            ]
+        }
+    """
+
     formatted_cost = serializers.SerializerMethodField(
         method_name='get_formatted_cost')
     max_damage = serializers.SerializerMethodField(

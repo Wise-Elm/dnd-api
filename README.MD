@@ -8,8 +8,11 @@ https://github.com/Wise-Elm/
 ### Program working title: 
 dnd5eapi
 
-### Please see a working version of this API:
+### See a working version of this API:
 http://drsteeds.pythonanywhere.com/items
+
+Please note that the databases are not all fully populated as this project is 
+intended to be a proof of concept.
 
 ### Status:
 This program is currently in production, and is primarily derived for the 
@@ -26,6 +29,6 @@ information.
 ### Database:
 dnd5eapi is currently setup to use MySQL.
 
-### Programing Language:
-Python 3.10.2
+### Platforms:
+Python 3.10.2,
 Django 4.0.2
